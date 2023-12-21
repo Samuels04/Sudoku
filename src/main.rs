@@ -1,7 +1,9 @@
+use utils::Board;
+
 mod utils;
 fn main() {
 
-    let mut board: Vec<Vec<Number>> = Vec::new();
+    let mut board: Board;
     let mut amount_of_numbers: i8;
     for i in 1..10 {
         println!("What are the numbers in this row?");
@@ -20,11 +22,11 @@ fn main() {
         for ii in 0..10 {
             if cols.contains(&format!("{}", ii).as_str()) {
                 board.get_mut(i).unwrap().get_mut(ii) = numbers.get(counter);
-                counter++;
+                counter+= 1;
+                
             }
         }
         
     }
 }
-fn match
-#[allow(dead_code)]
+
