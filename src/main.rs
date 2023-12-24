@@ -14,7 +14,7 @@ fn main() {
         println!("In which columns are they?");
         let mut input2 = String::new();
         std::io::stdin().read_line(&mut input2);
-
+        
 
         let cols: Vec<&str> = input2.trim().split(",").collect();
         
