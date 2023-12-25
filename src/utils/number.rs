@@ -10,3 +10,9 @@ pub enum Number {
     EIGTH = 8,
     NINE = 9,
 }
+
+impl PartialEq for Number {
+    fn eq(&self, other: &Self) -> bool {
+        core::mem::discriminant(self) == core::mem::discriminant(other)
+    }
+}
