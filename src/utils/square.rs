@@ -9,8 +9,8 @@ impl Square {
 		Square{value: value}
 	}
 
-	pub fn set_value(&self, to: Number) {
-		self.value = to;
+	pub fn set_value(&mut self, to: &Number) {
+		self.value = *to;
 	}
 
 	pub fn is_empty(&self) -> bool {
