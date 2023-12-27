@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::{collections::{HashMap, hash_map::RandomState}, f32::consts::E};
 use super::{Square, Number};
 
 #[allow(dead_code)]
@@ -55,4 +55,26 @@ impl Board {
 
 	}
 
+	pub fn is_number_in_row(&mut self, number: Number, row: i8) -> bool{
+		let mut current_index = 9*(row - 1) + 1;
+		let end_index_of_row = 9*row;
+
+		while current_index != end_index_of_row{
+			if self.get_square(current_index).unwrap().get_value() == number{
+				return true;
+			}
+			current_index += 1;
+		}
+
+		return false;
+		
+	}
+
 }
+
+impl Clone for Board {
+    fn clone(&self) -> Self {
+        Self { rows: self.rows.clone(), cols: self.cols.clone(), board: self.board.clone() }
+    }
+}
+

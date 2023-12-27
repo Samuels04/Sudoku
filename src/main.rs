@@ -1,21 +1,33 @@
+use strum::IntoEnumIterator;
 use utils::Board;
+
+//use binary_tree::{BinaryTree, count::CountTree};
 
 use crate::utils::Number;
 
 mod utils;
+mod tree;
 #[allow(unused_must_use, unused_variables)]
 fn main() {
 
-    let board = Board::new(9, 9);
+    let mut board = Board::new(9, 9);
 
-    set_initial_values(board);
+    set_initial_values(&mut board);
 
-    
+    for i in Number::iter() {
+
+        for ii in 0..=9 {
+            if board.is_number_in_row(i, ii) {
+                continue;
+            }
+
+        }
+    }
     
 }
 
 #[allow(unused_must_use, unused_variables)]
-fn set_initial_values(mut board: Board) {
+fn set_initial_values(board: &mut Board) {
     for i in 1..=9 {
         println!("What are the numbers in this row?");
         let mut input = String::new();

@@ -1,3 +1,8 @@
+
+//use strum::IntoEnumIterator; // 0.17.1
+use strum_macros::EnumIter; // 0.17.1
+
+#[derive(Debug, EnumIter)]
 pub enum Number {
     EMPTY = 0,
     ONE = 1,
@@ -22,6 +27,21 @@ impl Number {
     pub fn parse(s: String) -> Number {
         let number: i8 = s.trim().parse().unwrap();
         match number {
+            0 => return Number::EMPTY,
+            1 => return Number::ONE,
+            2 => return Number::TWO,
+            3 => return Number::THREE,
+            4 => return Number::FOUR,
+            5 => return Number::FIVE,
+            6 => return Number::SIX,
+            7 => return Number::SEVEN,
+            8 => return Number::EIGTH,
+            9 => return Number::NINE,
+            _ => return Number::ERROR,
+        }
+    }
+    pub fn parse_int(i: i8) -> Number {
+        match i {
             0 => return Number::EMPTY,
             1 => return Number::ONE,
             2 => return Number::TWO,
