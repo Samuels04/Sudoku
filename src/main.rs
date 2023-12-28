@@ -1,5 +1,5 @@
 use strum::IntoEnumIterator;
-use utils::Board;
+use utils::{Board, Square};
 
 //use binary_tree::{BinaryTree, count::CountTree};
 
@@ -50,5 +50,18 @@ fn set_initial_values(board: &mut Board) {
         
         
     }
+}
+
+fn check_value(board: &mut Board, square: Square) -> bool {
+    let row = board.get_row(&square);
+
+    let col = board.get_col(&square);
+
+    if board.is_number_in_row(square.get_value(), row) || board.is_number_in_col(square.get_value(), col) || board.is_number_in_diag(square.get_value(), (row, col)){
+        return false
+    }
+
+    return true
+
 }
 
