@@ -1,3 +1,5 @@
+
+
 use strum::IntoEnumIterator;
 use utils::{Board, Square};
 
@@ -6,7 +8,6 @@ use utils::{Board, Square};
 use crate::utils::Number;
 
 mod utils;
-mod tree;
 #[allow(unused_must_use, unused_variables)]
 fn main() {
 
@@ -14,15 +15,7 @@ fn main() {
 
     set_initial_values(&mut board);
 
-    for i in Number::iter() {
-
-        for ii in 0..=9 {
-            if board.is_number_in_row(i, ii) {
-                continue;
-            }
-
-        }
-    }
+    let solved = solve(&mut board, 1);
     
 }
 
@@ -52,16 +45,36 @@ fn set_initial_values(board: &mut Board) {
     }
 }
 
-fn check_value(board: &mut Board, square: Square) -> bool {
-    let row = board.get_row(&square);
-
-    let col = board.get_col(&square);
-
-    if board.is_number_in_row(square.get_value(), row) || board.is_number_in_col(square.get_value(), col) || board.is_number_in_diag(square.get_value(), (row, col)){
+fn check_value(board: &mut Board, index: i8, number: Number) -> bool {
+    let square = Square::new(number);
+    /*
+    if board.is_number_in_row(square.get_value(), row) || board.is_number_in_col(square.get_value(), col) || board.is_number_in_subsquare(square.get_value(), (row, col)){
         return false
     }
-
+    */
     return true
 
+}
+
+fn solve(board: &mut Board, index: i8) -> bool{
+    let mut current_square = board.get_square(index);
+    if index == 81 {
+        return true
+    }
+    else if current_square.is_some() {
+        return solve(board, index + 1)
+    }
+    else {
+        for i in Number::iter() {
+           if check_value(board, index, i) {
+                board.set_square(index, i);
+                if solve(board, index + 1) {
+                    return true
+                }
+                board.empty_square(index)
+           }
+        }
+        return false //Backtrack
+    }
 }
 

@@ -1,8 +1,9 @@
 use super::Number;
-
+#[derive(Debug)]
 pub struct Square {
 	value: Number,
 }
+
 
 impl Square {
 	pub fn new(value: Number) -> Self {
@@ -20,6 +21,11 @@ impl Square {
 	pub fn is_empty(&self) -> bool {
 		self.value == Number::EMPTY
 	}
+
+	pub fn to_string(&self) -> String {
+		return String::from(format!(" -- \n|{:?}|\n -- ", self.value))
+	}
+
 }
 
 impl PartialEq for Square {
@@ -34,3 +40,5 @@ impl Clone for Square
 		Square { value: self.value.clone() }
 	}
 }
+
+impl Copy for Square{}

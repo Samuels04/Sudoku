@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, fmt::Display};
 use super::{Square, Number};
 
 #[allow(dead_code)]
@@ -17,11 +17,14 @@ impl Board {
 
 	
 	pub fn get_square(&mut self, index: i8) -> Option<&mut Square> {
-		self.board.get_mut(&index)
+		return match self.board.get_mut(&index){
+			Some(square) => Some(square),
+			None => None,
+		}
 	}
 
 	pub fn set_square(&mut self, index: i8, value: Number) {
-		if index <= 0 || index > self.size {
+		if index <= 0 || index > i8::try_from(self.size).unwrap() {
 			panic!("Invalid index");
 		}
 		self.board.get_mut(&index).unwrap().set_value(&value);
@@ -44,6 +47,8 @@ impl Board {
 		}
 
 		eprintln!("Error: Value not found in the board");
+
+		0
 	}
 
 	pub fn set_row(&mut self,row: i8, cols: Vec<&str>, values: Vec<Number>) {
@@ -96,27 +101,13 @@ impl Board {
 		return false
 	}
 
-	pub fn is_number_in_diag(&mut self, number: Number, position: (i8, i8)) -> bool {
-		let index = 9 * (i8::try_from(position[0]).unwrap() - 1) + i8::try_from(position[1]).unwrap();
-
-		if self.get_square(index).unwrap().get_value() == number {return true}
-		index += 10;
-
-		while !self.is_edge(self.get_square(index).unwrap()) {
-			if self.get_square(index).unwrap().get_value() == number {
-				return true
-			}
-			index += 10;
-		}
-		if self.get_square(index).unwrap().get_value() == number {return true}
-		return false
-
-		
+	pub fn is_number_in_subsquare(&mut self, number: Number, position: (i8, i8)) -> bool {
+		true
 	}
 
 	fn is_edge(&self, square: Square) -> bool{
 		let ind = *self.board.iter().find_map(|(key, &val)| if val == square { Some(key) } else { None }).unwrap();
-		if ind <= 0 || ind > self.size {
+		if ind <= 0 || ind > i8::try_from(self.size).unwrap() {
 			panic!("Invalid index");
 		}
 
@@ -128,11 +119,63 @@ impl Board {
 		return edge_bottom || edge_left || edge_right || edge_top
 	}
 
+	pub fn print(&self) {
+		for i in self.board.iter() {
+			if self.is_edge(*i.1) {
+				println!("{:?}\n", i.1)
+			}
+			else
+			{
+				print!("{:?}", i.1)
+			}
+
+		}
+	}
+
+	pub fn empty_square(&mut self, index: i8) {
+		self.board.get_mut(&index).unwrap().set_value(&Number::EMPTY);
+	}
+
+}
+
+impl Iterator for Board {
+    type Item = Square;
+
+    fn next(&mut self) -> Option<Square> {
+       Some(*self.board.iter().next().unwrap().1)
+    }
+
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        (0, None)
+    }
+
+    fn count(self) -> usize
+    where
+        Self: Sized,
+    {
+        self.fold(
+            0,
+            |count, _| count + 1,
+        )
+    }
+
+    fn last(self) -> Option<Self::Item>
+    where
+        Self: Sized,
+    {
+        #[inline]
+        fn some<T>(_: Option<T>, x: T) -> Option<T> {
+            Some(x)
+        }
+
+        self.fold(None, some)
+	}
+    
 }
 
 impl Clone for Board {
     fn clone(&self) -> Self {
-        Self { rows: self.rows.clone(), cols: self.cols.clone(), board: self.board.clone() }
+        Self { rows: self.rows.clone(), cols: self.cols.clone(), board: self.board.clone(), size: self.size}
     }
 }
 
