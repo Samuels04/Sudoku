@@ -36,7 +36,13 @@ fn set_initial_values(board: &mut Board) {
         println!("In which columns are they?");
         let mut input2 = String::new();
         std::io::stdin().read_line(&mut input2);
-        let cols: Vec<&str> = input2.trim().split("\n,").collect();
+        let cols_as_str: Vec<&str> = input2.trim().split("\n,").collect();
+
+        let mut cols: Vec<i8> = Vec::new();
+
+        for i in cols_as_str {
+            cols.push(i.parse().unwrap());
+        }
 
         board.set_row(i, cols, numbers);
         
@@ -47,17 +53,17 @@ fn set_initial_values(board: &mut Board) {
 
 fn check_value(board: &mut Board, index: i8, number: Number) -> bool {
     let square = Square::new(number);
-    /*
+    
     if board.is_number_in_row(square.get_value(), row) || board.is_number_in_col(square.get_value(), col) || board.is_number_in_subsquare(square.get_value(), (row, col)){
         return false
     }
-    */
+    
     return true
 
 }
 
 fn solve(board: &mut Board, index: i8) -> bool{
-    let mut current_square = board.get_square(index);
+    let current_square = board.get_square(index);
     if index == 81 {
         return true
     }

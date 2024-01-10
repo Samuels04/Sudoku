@@ -1,6 +1,17 @@
 use std::{collections::HashMap, fmt::Display};
 use super::{Square, Number};
 
+
+
+/// Represents a Board. Instead of using a Matrix, I decided to use a 
+/// Hash Map for the sake of simplicity.
+/// ## Methods
+/// * **new**: instantiate a new board with the provided rows and columns
+/// * **get_square**: returns the object of class square at any given index
+/// * **set_square**: sets the value of the square to any given option of the enumeration Number
+/// * **get_row**: returns the row of any given square
+/// * **get_col**: returns the column of any given square
+/// 
 #[allow(dead_code)]
 pub struct Board {
 	rows: i8,
@@ -16,6 +27,7 @@ impl Board {
 	}
 
 	
+	/// .
 	pub fn get_square(&mut self, index: i8) -> Option<&mut Square> {
 		return match self.board.get_mut(&index){
 			Some(square) => Some(square),
@@ -23,6 +35,11 @@ impl Board {
 		}
 	}
 
+	/// Sets the square of this [`Board`].
+	///
+	/// # Panics
+	///
+	/// Panics if the index is not valid
 	pub fn set_square(&mut self, index: i8, value: Number) {
 		if index <= 0 || index > i8::try_from(self.size).unwrap() {
 			panic!("Invalid index");
@@ -51,19 +68,15 @@ impl Board {
 		0
 	}
 
-	pub fn set_row(&mut self,row: i8, cols: Vec<&str>, values: Vec<Number>) {
-		let mut cols_i: Vec<i8> = Vec::new();
-		for &i in cols.iter() {
-			cols_i.push(i.parse().unwrap())
-		}
-
+	pub fn set_row(&mut self,row: i8, cols: Vec<i8>, values: Vec<Number>) {
+	
 		let mut current_index = 9*(row - 1) + 1;
 		let end_index_of_row = 9*row;
 
 		let mut col = 0;
 
 		while current_index <= end_index_of_row {
-			if cols_i.contains(&current_index) {
+			if cols.contains(&current_index) {
 				self.board.get_mut(&current_index).unwrap().set_value(values.get(col).unwrap());
 				col += 1;
 			}
@@ -102,7 +115,9 @@ impl Board {
 	}
 
 	pub fn is_number_in_subsquare(&mut self, number: Number, position: (i8, i8)) -> bool {
-		true
+		let index = position.0*position.1;
+
+		
 	}
 
 	fn is_edge(&self, square: Square) -> bool{
@@ -130,6 +145,31 @@ impl Board {
 			}
 
 		}
+	}
+
+	fn get_subsquare(&self, square: &Square) -> i8{
+		let row = self.get_row(square);
+		let col = self.get_col(&square);
+		let mut subsquare: i8;
+		match row{
+			1..=3 => match col {
+				1..=3 => subsquare = 1,
+				4..=6 => subsquare = 2,
+				_ => subsquare = 3,
+			},
+			4..=6 => match col {
+				1..=3 => subsquare = 4,
+				4..=6 => subsquare = 5,
+				_ => subsquare = 6,
+			}
+			_ => match col {
+				1..=3 => subsquare = 7,
+				4..=6 => subsquare = 8,
+				_ => subsquare = 9,
+			}
+		}
+
+		subsquare
 	}
 
 	pub fn empty_square(&mut self, index: i8) {
