@@ -115,23 +115,133 @@ impl Board {
 	}
 
 	pub fn is_number_in_subsquare(&mut self, number: Number, position: (i8, i8)) -> bool {
+
+		
 		let index = position.0*position.1;
 
+		let square = Square::new(number);
+
+		let subsquare = self.get_subsquare(&square);
+
+		let mut result: bool = true;
+
+		let checks_from_centre = [self.get(index - 1), self.get(index + 1), self.get(index + 9), self.get(index - 9), self.get((position.0 - 1)*(position.1 - 1)), self.get((position.0 - 1)*(position.1 + 1)), self.get((position.0 + 1)*(position.1 - 1)), self.get((position.0 + 1)*(position.1 + 1))];
+		//checks_from_centre is: from the center of the subsquare, all the values of the rest of the subsquare: to the rigth. left up. down and diagonals
+
+
+		if position.1 % 2 == 0  && position.0 % 2 == 0
+		{
+			
+			if subsquare == 1 || subsquare == 4 || subsquare == 7 || subsquare == 3 || subsquare == 6 || subsquare == 9 
+			{
+				for i in checks_from_centre
+				{
+					if i == square
+					{
+						result = false;
+					}
+				}
+			}
+			else
+			{
+				let side;
+				if (9*position.0 - index) > (index - (9*(position.0 - 1) + 1))
+				{
+					side = Sides::Left;
+				} else 
+				{
+					side = Sides::Right;
+				}
+
+				match side 
+				{
+					Sides::Left => if self.get(index + 1) == square || self.get(index - 9) == square || self.get(index + 9) == square || self.get(index - 8) == square || self.get(index + 10) == square || self.get(index - 7) == square || self.get(index + 11) == square || self.get(index + 2) == square{
+						result = false;
+
+					},
+					Sides::Right => if self.get(index - 1) == square || self.get(index - 9) == square || self.get(index + 9) == square || self.get(index + 8) == square || self.get(index - 10) == square || self.get(index + 7) == square || self.get(index - 11) == square || self.get(index - 2) == square{
+						result = false;
+					}
+
+					_ => panic!("Value not possible"),
+				}
+			}		
+		} else
+		{
+			match subsquare{
+				1 => if self.is_corner(square)
+				{
+					if self.get(index + 1) == square || self.get(index - 9) == square || self.get(index + 9) == square || self.get(index - 8) == square || self.get(index + 10) == square || self.get(index - 7) == square || self.get(index + 11) == square || self.get(index + 2) == square{
+					}
+				}
+
+			}
+		}
+
+
+		result
 		
 	}
 
+	pub fn get(&self, key: i8) -> Square{
+		*self.board.get(&key).unwrap()
+	}
 	fn is_edge(&self, square: Square) -> bool{
 		let ind = *self.board.iter().find_map(|(key, &val)| if val == square { Some(key) } else { None }).unwrap();
 		if ind <= 0 || ind > i8::try_from(self.size).unwrap() {
 			panic!("Invalid index");
 		}
 
-		let edge_top = ind >= 1 && ind <= 0;
+		let edge_top = ind >= 1 && ind <= 9;
 		let edge_left = ind % 9 == 1;
 		let edge_right = ind % 9 == 0;
 		let edge_bottom = ind >= 73 && ind <= 81;
 
 		return edge_bottom || edge_left || edge_right || edge_top
+	}
+
+	fn which_edge(&self, square: Square) -> Sides{
+		let ind = *self.board.iter().find_map(|(key, &val)| if val == square { Some(key) } else { None }).unwrap();
+		if ind <= 0 || ind > i8::try_from(self.size).unwrap() {
+			panic!("Invalid index");
+		}
+
+		let edge_top = ind >= 1 && ind <= 9;
+		let edge_left = ind % 9 == 1;
+		let edge_right = ind % 9 == 0;
+		let edge_bottom = ind >= 73 && ind <= 81;
+
+		if edge_top
+		{
+			Sides::Up
+
+		} else if edge_bottom 
+		{
+			Sides::Down
+
+		} else if edge_left
+		{
+			Sides::Left
+
+		} else if edge_right
+		{
+			Sides::Right
+		} else {
+			panic!("Is not an edge")
+		}
+	}
+	fn is_corner(&self, square: Square) -> bool{
+		let ind = *self.board.iter().find_map(|(key, &val)| if val == square { Some(key) } else { None }).unwrap();
+		if ind <= 0 || ind > i8::try_from(self.size).unwrap() {
+			panic!("Invalid index");
+		}
+
+		let edge_top = ind >= 1 && ind <= 9;
+		let edge_left = ind % 9 == 1;
+		let edge_right = ind % 9 == 0;
+		let edge_bottom = ind >= 73 && ind <= 81;
+
+		return (edge_bottom && edge_left) || (edge_bottom && edge_right) || (edge_top && edge_left) || (edge_top && edge_right);
 	}
 
 	pub fn print(&self) {
@@ -217,5 +327,12 @@ impl Clone for Board {
     fn clone(&self) -> Self {
         Self { rows: self.rows.clone(), cols: self.cols.clone(), board: self.board.clone(), size: self.size}
     }
+}
+
+enum Sides{
+	Left,
+	Right,
+	Up,
+	Down,
 }
 
